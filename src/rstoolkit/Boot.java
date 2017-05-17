@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.Instrumentation;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +47,9 @@ public class Boot {
 		if (!jav.exists()) {
 			bin.mkdirs();
 			System.out.println("jagexappletviewer.jar not present. Downloading...");
-			InputStream in = new URL("http://puu.sh/vShhW/c1144ec90b.jar").openStream();
+			HttpURLConnection con = (HttpURLConnection) new URL("http://puu.sh/vT82D.jar").openConnection();
+			con.addRequestProperty("User-Agent", "Mozilla/5.0");
+			InputStream in = con.getInputStream();
 			FileOutputStream fos = new FileOutputStream(jav);
 			int read;
 			byte[] buf = new byte[8192];
