@@ -6,3 +6,6 @@
 /MANIFEST.MF
 /compileprotocol.bat
 /createjar.bat
+/.gitignore
+/bin/
+*.class
