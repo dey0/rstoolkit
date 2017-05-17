@@ -69,7 +69,7 @@ public class GreatOrbProject extends Script<Rs3Context> {
 		Team team = getTeam();
 		Altar altar = getAltar();
 		if (this.altar != altar) {
-			System.out.println("Changed altar: " + altar);
+			System.out.println("Changed altar: " + altar + "; team: " + team);
 			if (altar.altarId == 6) {
 				System.out.println("Initializing members GOP...");
 				myScores = Arrays.copyOf(myScores, 8);
@@ -95,7 +95,6 @@ public class GreatOrbProject extends Script<Rs3Context> {
 			myScore = -1;
 			opponentScore = -1;
 		}
-		System.out.println(client.getNpcs().length + " npcs");
 		for (int i = 0; i < client.getNpcs().length; i++) {
 			if (client.getNpcs()[i] != null) {
 				Npc npc = (Npc) client.getNpcs()[i].getValue();

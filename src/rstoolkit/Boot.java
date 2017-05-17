@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import rstoolkit.client.ConsoleOutputStream;
 import rstoolkit.injection.Hooks;
 import rstoolkit.injection.Injector;
 
@@ -22,6 +24,7 @@ public class Boot {
 	private static Class<?> mainClass;
 	private static String game;
 	private static File root;
+	private static ConsoleOutputStream standardOut;
 	
 	public static void main(String[] args) throws IOException {
 		String game = args.length < 1 ? "runescape" : args[0];
@@ -63,6 +66,8 @@ public class Boot {
 	}
 
 	public static void premain(String game, Instrumentation inst) throws IOException, InterruptedException {
+		Boot.standardOut = new ConsoleOutputStream(System.out);
+		System.setOut(new PrintStream(Boot.standardOut));
 		System.setProperty("java.vendor", "Oracle Corporation");
 		System.setProperty("java.version", "1.7.0-internal");
 
@@ -85,6 +90,10 @@ public class Boot {
 
 	public static String getGame() {
 		return game;
+	}
+	
+	public static ConsoleOutputStream getStandardOut() {
+		return standardOut;
 	}
 	
 	static {

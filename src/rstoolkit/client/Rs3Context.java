@@ -1,5 +1,7 @@
 package rstoolkit.client;
 
+import java.awt.BorderLayout;
+import java.awt.CheckboxMenuItem;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Menu;
@@ -7,6 +9,8 @@ import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -83,10 +87,31 @@ public class Rs3Context implements Runnable {
 				createWidgetsDialog();
 			}
 		});
+		Console c = new Console();
+		Boot.getStandardOut().setConsole(c);
+		CheckboxMenuItem showConsole = new CheckboxMenuItem("Console");
+		showConsole.setState(true);
+		showConsole.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.DESELECTED) {
+					viewerFrame.remove(c);
+					viewerFrame.pack();
+				} else {
+					viewerFrame.add(c, BorderLayout.SOUTH);
+					viewerFrame.pack();
+				}
+			}
+		});
 		debugMenu.add(mi);
+		debugMenu.add(showConsole);
 		bar.add(debugMenu);
 		viewerFrame.setMenuBar(bar);
+		System.out.println(viewerFrame.getLayout());
+		viewerFrame.getComponent(0).setPreferredSize(new Dimension(1024, 768));
+		viewerFrame.add(c, BorderLayout.SOUTH);
 		viewerFrame.pack();
+		viewerFrame.setLocationRelativeTo(null);
 		dialog = new PaintDialog(viewerFrame, client.getApplet());
 		try {
 			while (true) {
@@ -137,6 +162,7 @@ public class Rs3Context implements Runnable {
 		if (GreatOrbProject.isActive() && script == null) {
 			script = new GreatOrbProject(this);
 		} else if (!GreatOrbProject.isActive() && script != null) {
+			System.out.println("GOP no longer active");
 			script = null;
 		}
 		if (script != null) {
