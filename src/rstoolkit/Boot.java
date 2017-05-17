@@ -20,16 +20,23 @@ public class Boot {
 
 	private static Class<?> mainClass;
 	private static String game;
+	private static File root;
 	
 	public static void main(String[] args) throws IOException {
 		String game = args.length < 1 ? "runescape" : args[0];
 		String config = supportedConfigs.get(game);
 		if (config == null)
 			config = "http://www.runescape.com/k=3/jav_config.ws";
+		String classpath = "";
+		root = new File(Boot.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+		if (!root.toString().endsWith(".jar")) {
+			classpath = ";" + System.getProperty("java.class.path");
+			root = new File(root.getParentFile(), "RSToolkit.jar");
+		}
 		args = new String[] {
 			"java",
-			"-javaagent:" + new File("RSToolkit.jar").getAbsolutePath() + "=" + game,
-			"-Djava.class.path=jagexappletviewer.jar",
+			"-javaagent:" + root.getAbsolutePath() + "=" + game,
+			"-Djava.class.path=jagexappletviewer.jar" + classpath,
 			"-Dcom.jagex.config=" + config,
 			"jagexappletviewer",
 			"runescape"
@@ -62,10 +69,10 @@ public class Boot {
 		}
 		Boot.game = game;
 		Boot.mainClass = supportedGames.get(game);
+		Boot.root = new File(Boot.class.getProtectionDomain().getCodeSource().getLocation().getFile());
 		Hooks.loadHooks(getMainClass().getPackage());
-		File root = new File(Boot.class.getProtectionDomain().getCodeSource().getLocation().getFile());
 		File workingDir = new File(System.getProperty("user.dir"));
-		inst.addTransformer(new Injector(root, workingDir));
+		inst.addTransformer(new Injector(Boot.root, workingDir));
 		System.out.println("RSToolkit initializing [" + game + "]...");
 	}
 
@@ -76,7 +83,7 @@ public class Boot {
 	public static String getGame() {
 		return game;
 	}
-
+	
 	static {
 		supportedConfigs.put("runescape", "http://www.runescape.com/k=3/l=0/jav_config.ws");
 		supportedConfigs.put("oldschool", "http://oldschool.runescape.com/jav_config.ws");

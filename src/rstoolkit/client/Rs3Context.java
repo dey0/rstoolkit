@@ -8,8 +8,6 @@ import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JDialog;
@@ -31,7 +29,7 @@ public class Rs3Context implements Runnable {
 	private static Rs3Context instance;
 	private Client client;
 	private Frame viewerFrame;
-	private Map<String, Script<Rs3Context>> runningScripts = new HashMap<>();
+	private Script<Rs3Context> script;
 	
 	public Rs3Context(Client client) {
 		Rs3Context.instance = this;
@@ -76,6 +74,7 @@ public class Rs3Context implements Runnable {
 		});
 		fileMenu.add(newRs3);
 		fileMenu.add(newOsrs);
+		bar.add(fileMenu);
 		Menu debugMenu = new Menu("Debug");
 		MenuItem mi = new MenuItem("Widgets");
 		mi.addActionListener(new ActionListener() {
@@ -92,6 +91,7 @@ public class Rs3Context implements Runnable {
 		try {
 			while (true) {
 				loop();
+				Thread.sleep(50);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -133,19 +133,16 @@ public class Rs3Context implements Runnable {
 	
 	private PaintDialog dialog;
 	
-	public void loop() throws Exception {
-		if (GreatOrbProject.isActive() && !runningScripts.containsKey("great-orb-project")) {
-			GreatOrbProject gop = new GreatOrbProject(this);
-			gop.init();
-			runningScripts.put("great-orb-project", gop);
-		} else if (!GreatOrbProject.isActive() && runningScripts.containsKey("great-orb-project")) {
-			runningScripts.remove("great-orb-project");
+	public void loop() {
+		if (GreatOrbProject.isActive() && script == null) {
+			script = new GreatOrbProject(this);
+		} else if (!GreatOrbProject.isActive() && script != null) {
+			script = null;
 		}
-		for (Script<Rs3Context> s : runningScripts.values()) {
-			s.onTick();
-			s.onPaint(dialog.getPaintGraphics());
+		if (script != null) {
+			script.onTick();
+			script.onPaint(dialog.getPaintGraphics());
 		}
-		Thread.sleep(50);
 		
 		dialog.getPaintGraphics().drawString("Hello world", 30, 30);
 		dialog.repaint();

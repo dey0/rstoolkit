@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class PaintDialog extends JDialog {
@@ -22,28 +23,38 @@ public class PaintDialog extends JDialog {
 		super(frame);
 		Dimension size = game.getSize();
 		setSize(size);
-        setUndecorated(true);
+		setUndecorated(true);
 		setLocation(game.getLocationOnScreen());
-		setBackground(new Color(0, 0, 0, 0));
 		setFocusable(false);
 		setFocusableWindowState(false);
+		getRootPane().setOpaque(false);
+		setContentPane(new JPanel() {
+			@Override
+			public void paint(Graphics g) {
+				g.drawImage(background, 0, 0, null);
+			}
+		});
+		getContentPane().setPreferredSize(size);
+		pack();
+		setBackground(new Color(0, 0, 0, 0));
 		setVisible(true);
-		
-		background = new BufferedImage(765, 503, BufferedImage.TYPE_INT_ARGB);
-		g = background.createGraphics();
 		frame.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentMoved(ComponentEvent e) {
 				setLocation(game.getLocationOnScreen());
 			}
+			@Override
+			public void componentResized(ComponentEvent e) {
+				getContentPane().setPreferredSize(game.getSize());
+				PaintDialog.this.pack();
+				background = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+				g = background.createGraphics();
+			}
 		});
+		background = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		g = background.createGraphics();
 	}
-	
-	@Override
-	public void paint(Graphics g) {
-		g.drawImage(background, 0, 0, this);
-	}
-	
+
 	public Graphics2D getPaintGraphics() {
 		return g;
 	}
