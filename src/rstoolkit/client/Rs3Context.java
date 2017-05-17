@@ -103,8 +103,23 @@ public class Rs3Context implements Runnable {
 				}
 			}
 		});
+		MenuItem fire = new MenuItem("Fire action");
+		fire.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (GreatOrbProject.isActive()) {
+					WidgetComponent cmp1 = client.getComponent(781, 38);
+					if (cmp1 != null)
+						cmp1.setText("5000");
+					WidgetComponent cmp2 = client.getComponent(781, 47);
+					if (cmp2 != null)
+						cmp2.setText("5000");
+				}
+			}
+		});
 		debugMenu.add(mi);
 		debugMenu.add(showConsole);
+		debugMenu.add(fire);
 		bar.add(debugMenu);
 		viewerFrame.setMenuBar(bar);
 		System.out.println(viewerFrame.getLayout());

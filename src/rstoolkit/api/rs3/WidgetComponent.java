@@ -3,12 +3,16 @@ package rstoolkit.api.rs3;
 import rstoolkit.client.Rs3Context;
 import rstoolkit.injection.Accessor;
 import rstoolkit.injection.Getter;
+import rstoolkit.injection.Setter;
 
 @Accessor("WidgetComponent")
 public interface WidgetComponent {
 
 	@Getter("text")
 	public String getText();
+	
+	@Setter("text")
+	public void setText(String text);
 
 	@Getter("options")
 	public String[] getOptions();

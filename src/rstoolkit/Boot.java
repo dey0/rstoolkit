@@ -37,6 +37,7 @@ public class Boot {
 			classpath = ";" + System.getProperty("java.class.path");
 			root = new File(root.getParentFile(), "agent.jar");
 		}
+		System.out.println(System.getProperties());
 		args = new String[] {
 			"java",
 			"-javaagent:" + root.getAbsolutePath() + "=" + game,

@@ -29,6 +29,7 @@ import rstoolkit.injection.Rs2Hooks.FieldHook;
 public class Injector implements ClassFileTransformer, Opcodes {
 
 	private File workingDir;
+	private boolean loaded;
 	
 	public Injector(File workingDir) {
 		this.workingDir = workingDir;
@@ -38,6 +39,10 @@ public class Injector implements ClassFileTransformer, Opcodes {
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
 			ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
 		try {
+			if (!loaded && "Rs2Applet".equals(className)) {
+				loader.loadClass("netscape.javascript.JSObject");
+				loaded = true;
+			}
 			if (isAccessed(className)) {
 				ClassNode cn = new ClassNode();
 				ClassReader cr = new ClassReader(classfileBuffer);
@@ -51,6 +56,8 @@ public class Injector implements ClassFileTransformer, Opcodes {
 				FileOutputStream fos = new FileOutputStream(f);
 				fos.write(result);
 				fos.close();
+//				if (className.equals("gv"))
+//					System.exit(0);
 				return result;
 			}
 		} catch (Throwable e) {
@@ -140,7 +147,7 @@ public class Injector implements ClassFileTransformer, Opcodes {
 		mv.visitCode();
 		FieldHook fh = Hooks.getFieldAccessor(accClass.getName(), fieldName);
 		Type at = Type.getArgumentTypes(m)[0];
-		if (fh.hasObfuscatedOwner())
+		if (!fh.hasObfuscatedOwner())
 			mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(at.getOpcode(ILOAD), 1);
 		if (fh.hasMultiplier()) {
