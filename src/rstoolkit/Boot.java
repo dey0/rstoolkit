@@ -31,7 +31,7 @@ public class Boot {
 		root = new File(Boot.class.getProtectionDomain().getCodeSource().getLocation().getFile());
 		if (!root.toString().endsWith(".jar")) {
 			classpath = ";" + System.getProperty("java.class.path");
-			root = new File(root.getParentFile(), "RSToolkit.jar");
+			root = new File(root.getParentFile(), "agent.jar");
 		}
 		args = new String[] {
 			"java",
@@ -54,8 +54,8 @@ public class Boot {
 				fos.write(buf, 0, read);
 			fos.close();
 		}
-		System.out.println(bin);
-		System.out.println(Arrays.toString(args));
+		System.out.println("Working directory: " + bin);
+		System.out.println("Launch command: " + Arrays.toString(args));
 		new ProcessBuilder(args).directory(bin).start();
 	}
 
@@ -72,7 +72,7 @@ public class Boot {
 		Boot.root = new File(Boot.class.getProtectionDomain().getCodeSource().getLocation().getFile());
 		Hooks.loadHooks(getMainClass().getPackage());
 		File workingDir = new File(System.getProperty("user.dir"));
-		inst.addTransformer(new Injector(Boot.root, workingDir));
+		inst.addTransformer(new Injector(workingDir));
 		System.out.println("RSToolkit initializing [" + game + "]...");
 	}
 

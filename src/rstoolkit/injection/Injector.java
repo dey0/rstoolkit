@@ -28,10 +28,9 @@ import rstoolkit.injection.Rs2Hooks.FieldHook;
 
 public class Injector implements ClassFileTransformer, Opcodes {
 
-	private File binaryRoot, workingDir;
+	private File workingDir;
 	
-	public Injector(File root, File workingDir) {
-		this.binaryRoot = root;
+	public Injector(File workingDir) {
 		this.workingDir = workingDir;
 	}
 

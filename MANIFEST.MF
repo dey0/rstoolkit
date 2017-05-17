@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Premain-Class: rstoolkit.Boot
+Main-Class: rstoolkit.Boot
+Class-Path: ./asm-5.2.jar;./protobuf-java-3.2.0.jar

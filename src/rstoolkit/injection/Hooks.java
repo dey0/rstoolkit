@@ -7,7 +7,6 @@ import java.util.Map;
 import rstoolkit.Boot;
 import rstoolkit.injection.Rs2Hooks.ClassHook;
 import rstoolkit.injection.Rs2Hooks.FieldHook;
-import rstoolkit.injection.Rs2Hooks.HookReport;
 
 public class Hooks {
 
@@ -18,16 +17,16 @@ public class Hooks {
 	private static int version;
 	
 	public static void loadHooks(Package accessorPackage) throws IOException {
-		HookReport report = HookReport.parseFrom(Hooks.class.getResourceAsStream("/hooks_" + Boot.getGame() + ".pb"));
-		version = report.getRunescapeVersion();
-		System.out.println("Loaded " + report.getClassHooksCount() + " class hooks and " + report.getFieldHooksCount() + " field hooks for #" + version);
+		Rs2Hooks hooks = Rs2Hooks.load(Hooks.class.getResourceAsStream("/hooks_" + Boot.getGame() + ".json"));
+		version = hooks.getVersion();
+		System.out.println("Loaded " + hooks.getClassHooks().length + " class hooks and " + hooks.getFieldHooks().length + " field hooks for #" + version);
 		String pkg = accessorPackage.getName() + '.';
-		for (ClassHook ch : report.getClassHooksList()) {
+		for (ClassHook ch : hooks.getClassHooks()) {
 			reverse.put(ch.getObfuscatedName(), pkg + ch.getName());
 			mapping.put(pkg + ch.getName(), ch.getObfuscatedName());
 			classHooks.put(pkg + ch.getName(), ch);
 		}
-		for (FieldHook fh : report.getFieldHooksList()) {
+		for (FieldHook fh : hooks.getFieldHooks()) {
 			String ident = pkg + fh.getOwner() + '.' + fh.getName();
 			mapping.put(ident, fh.getObfuscatedName());
 			fieldHooks.put(ident, fh);
